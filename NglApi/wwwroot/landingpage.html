@@ -8,8 +8,8 @@
   <meta name="description" content="Hive — universitet tələbələri üçün platforma. Akademik profil, anonim mesajlar, Direct yazışma və axtarış." />
 
   <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
-
-  <!-- Tema səhifə boyanmadan əvvəl tətbiq olunur (FOUC olmasın) -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <script src="assets/theme.js"></script>
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -58,6 +58,12 @@
           <svg data-icon-moon class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z" />
           </svg>
+        </button>
+
+        <!-- Səs Rejimi Düyməsi -->
+        <button type="button" id="soundToggleBtn" class="btn-sound-toggle" title="Səs effektləri (Açıq / Səssiz)" aria-label="Səs rejimi">
+          <svg id="soundIconOn" class="h-4 w-4 text-[var(--c-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <svg id="soundIconOff" class="hidden h-4 w-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
         </button>
 
         <a href="loginpage.html" class="btn btn-ghost hidden sm:inline-flex" data-i18n="nav.signin"></a>
@@ -207,8 +213,16 @@
             Öz universitetini seç, kurs yoldaşlarını tap, fənlər üzrə anonim suallar ver və dərslərin nəbzini tut.
           </p>
 
+          <!-- Sürətli Universitet Axtarışı -->
+          <div data-reveal style="--reveal-delay:100ms" class="mt-6 max-w-md mx-auto relative">
+            <input type="search" id="uniQuickSearch" class="input !py-2.5 pl-10 text-xs rounded-2xl shadow-sm" placeholder="Universitet axtar (məs. MAA, ADA, BANM, BDU, UNEC)..." aria-label="Universitet axtar" />
+            <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </span>
+          </div>
+
           <!-- Kateqoriya Filtrləri -->
-          <div data-reveal style="--reveal-delay:120ms" class="mt-8 flex flex-wrap items-center justify-center gap-2" id="uniFilters">
+          <div data-reveal style="--reveal-delay:120ms" class="mt-6 flex flex-wrap items-center justify-center gap-2" id="uniFilters">
             <button type="button" class="chip is-active" data-cat="all">Bütün Universitetlər (15)</button>
             <button type="button" class="chip" data-cat="tech">Mühəndislik & Texnologiya</button>
             <button type="button" class="chip" data-cat="state">Dövlət Universitetləri</button>
@@ -575,6 +589,7 @@
   <script src="assets/i18n.js"></script>
   <script src="assets/universities.js"></script>
   <script src="assets/api.js"></script>
+  <script src="assets/pro-features.js"></script>
   <script src="assets/landing.js"></script>
 </body>
 </html>

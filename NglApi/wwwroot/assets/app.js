@@ -84,6 +84,28 @@
 
   applySidebarState();
 
+  /* ---------- Səs Rejimi (HiveAudio) İdarəetməsi ---------------------------- */
+  var soundToggleBtn = H.el('soundToggleBtn');
+  var soundIconOn = H.el('soundIconOn');
+  var soundIconOff = H.el('soundIconOff');
+
+  function updateSoundUI() {
+    var muted = window.HiveAudio ? window.HiveAudio.isMuted : false;
+    if (soundIconOn) soundIconOn.classList.toggle('hidden', muted);
+    if (soundIconOff) soundIconOff.classList.toggle('hidden', !muted);
+    if (soundToggleBtn) soundToggleBtn.classList.toggle('is-muted', muted);
+  }
+
+  if (soundToggleBtn && window.HiveAudio) {
+    updateSoundUI();
+    soundToggleBtn.addEventListener('click', function () {
+      var muted = window.HiveAudio.toggleMute();
+      updateSoundUI();
+      if (!muted) window.HiveAudio.playClick();
+      H.toast(muted ? 'Səs effektləri söndürüldü' : 'Səs effektləri aktivləşdirildi', 'info');
+    });
+  }
+
   /* ---------- Naviqasiya & Marşrutlar ---------------------------------------- */
 
   function showView(name) {
@@ -102,6 +124,7 @@
   }
 
   function go(name, username) {
+    if (window.HiveAudio) window.HiveAudio.playClick();
     var hash = '#' + name + (username ? '/' + encodeURIComponent(username) : '');
     if (location.hash === hash) route();
     else location.hash = hash;
@@ -170,7 +193,61 @@
 
   function isAi(username) { return Boolean(state.aiNames[username]); }
 
-  /* ---------- Home: Paylaşım axını ------------------------------------------ */
+  /* ---------- Home: Paylaşım axını & Filtrləmə ------------------------------ */
+
+  var rawFeedPosts = [];
+  var currentFeedFilter = 'all';
+  var currentFeedTag = '';
+  var likedPosts = {};
+  try { likedPosts = JSON.parse(localStorage.getItem('hive.liked_posts') || '{}'); } catch (e) {}
+
+  function applyPostFilters() {
+    var filtered = rawFeedPosts.filter(function (post) {
+      if (currentFeedFilter === 'students') {
+        if (!post.authorCourseYear || post.authorCourseYear === 0) return false;
+      } else if (currentFeedFilter === 'abituriyents') {
+        if (post.authorCourseYear && post.authorCourseYear > 0) return false;
+      } else if (currentFeedFilter === 'my-uni') {
+        if (!state.user || !state.user.university || post.authorUniversity !== state.user.university) return false;
+      }
+
+      if (currentFeedTag) {
+        if (!post.content || post.content.toLowerCase().indexOf(currentFeedTag.toLowerCase()) === -1) return false;
+      }
+
+      return true;
+    });
+
+    renderPosts(filtered);
+  }
+
+  // Filtr tabları
+  document.querySelectorAll('#feedFilterTabs [data-filter]').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      if (window.HiveAudio) window.HiveAudio.playClick();
+      document.querySelectorAll('#feedFilterTabs [data-filter]').forEach(function (t) { t.classList.remove('is-active'); });
+      tab.classList.add('is-active');
+      currentFeedFilter = tab.dataset.filter || 'all';
+      applyPostFilters();
+    });
+  });
+
+  // Mövzu teqləri
+  document.querySelectorAll('.tag-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      if (window.HiveAudio) window.HiveAudio.playClick();
+      var tag = pill.dataset.tag;
+      if (currentFeedTag === tag) {
+        currentFeedTag = '';
+        pill.classList.remove('border-accent', 'text-accent');
+      } else {
+        document.querySelectorAll('.tag-pill').forEach(function (p) { p.classList.remove('border-accent', 'text-accent'); });
+        currentFeedTag = tag;
+        pill.classList.add('border-accent', 'text-accent');
+      }
+      applyPostFilters();
+    });
+  });
 
   function renderPosts(posts) {
     var list = H.el('feedList');
@@ -208,7 +285,8 @@
       
       var details = '@' + post.authorUsername;
       if (post.authorUniversity) details += ' · ' + post.authorUniversity;
-      if (post.authorCourseYear) details += ' · ' + H.courseLabel(post.authorCourseYear);
+      if (post.authorCourseYear && post.authorCourseYear > 0) details += ' · ' + H.courseLabel(post.authorCourseYear);
+      else if (post.authorCourseYear === 0) details += ' · Abituriyent';
       subLine.textContent = details;
       authorMeta.append(subLine);
 
@@ -220,20 +298,46 @@
       timeSpan.textContent = H.relativeTime(post.createdAt);
       header.append(timeSpan);
 
+      // Post mətni (teqlər vurğulanır)
       var body = document.createElement('p');
       body.className = 'mt-3 text-sm leading-relaxed whitespace-pre-wrap break-words text-[var(--c-text)]';
       body.textContent = post.content;
 
+      // Footer: Like, Şərh, Mesaj və Sil
       var footer = document.createElement('div');
-      footer.className = 'mt-4 flex items-center justify-between border-t border-line/60 pt-3 text-xs';
+      footer.className = 'mt-4 flex flex-wrap items-center justify-between border-t border-line/60 pt-3 text-xs gap-2';
 
+      var leftBtns = document.createElement('div');
+      leftBtns.className = 'flex items-center gap-2';
+
+      // İnteraktiv Bəyənmə Düyməsi (Heart Like)
+      var baseLikes = ((post.id * 17) % 23) + 3;
+      var isLiked = Boolean(likedPosts[post.id]);
+      var likeBtn = document.createElement('button');
+      likeBtn.type = 'button';
+      likeBtn.className = 'btn-like ' + (isLiked ? 'is-liked' : '');
+      likeBtn.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span class="like-num font-bold tabular-nums">' + (isLiked ? baseLikes + 1 : baseLikes) + '</span>';
+      
+      likeBtn.addEventListener('click', function () {
+        var nowLiked = !likedPosts[post.id];
+        likedPosts[post.id] = nowLiked;
+        try { localStorage.setItem('hive.liked_posts', JSON.stringify(likedPosts)); } catch (e) {}
+        if (window.HiveAudio) window.HiveAudio.playPop();
+        likeBtn.classList.toggle('is-liked', nowLiked);
+        var numEl = likeBtn.querySelector('.like-num');
+        if (numEl) numEl.textContent = nowLiked ? (baseLikes + 1) : baseLikes;
+      });
+      leftBtns.append(likeBtn);
+
+      // Şəxsi Mesaj Düyməsi
       var replyBtn = document.createElement('button');
       replyBtn.type = 'button';
       replyBtn.className = 'btn btn-outline !px-3 !py-1 text-xs font-semibold flex items-center gap-1.5';
-      replyBtn.innerHTML = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg> Mesaj yaz';
+      replyBtn.innerHTML = '<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg> Mesaj';
       replyBtn.addEventListener('click', function () { go('direct', post.authorUsername); });
+      leftBtns.append(replyBtn);
 
-      footer.append(replyBtn);
+      footer.append(leftBtns);
 
       if (state.user && state.user.id === post.authorId) {
         var delBtn = document.createElement('button');
@@ -258,8 +362,11 @@
     H.show(H.el('feedLoading'), true);
     H.show(H.el('feedError'), false);
 
-    H.api.posts(30)
-      .then(function (res) { renderPosts(Array.isArray(res) ? res : []); })
+    H.api.posts(40)
+      .then(function (res) {
+        rawFeedPosts = Array.isArray(res) ? res : [];
+        applyPostFilters();
+      })
       .catch(function (err) {
         var errBox = H.el('feedError');
         H.setText(errBox, err.message);
@@ -268,7 +375,10 @@
       .then(function () { H.show(H.el('feedLoading'), false); });
   }
 
-  if (H.el('feedRefresh')) H.el('feedRefresh').addEventListener('click', loadPosts);
+  if (H.el('feedRefresh')) H.el('feedRefresh').addEventListener('click', function () {
+    if (window.HiveAudio) window.HiveAudio.playClick();
+    loadPosts();
+  });
 
   var postForm = H.el('postComposer');
   if (postForm) {
@@ -292,6 +402,7 @@
 
       H.api.createPost(content)
         .then(function () {
+          if (window.HiveAudio) window.HiveAudio.playPop();
           postInput.value = '';
           if (postCount) postCount.textContent = '0/1000';
           loadPosts();
@@ -507,9 +618,28 @@
       var wrap = document.createElement('div');
       wrap.className = 'flex flex-col ' + (isMine ? 'items-end' : 'items-start');
 
-      var b = document.createElement('div');
-      b.className = 'bubble ' + (isMine ? 'bubble-mine' : 'bubble-theirs');
-      b.textContent = m.content;
+      var b;
+      if (m.content && m.content.indexOf('[VOICE_NOTE:') === 0) {
+        var duration = m.content.replace('[VOICE_NOTE:', '').replace(']', '') || '0:18';
+        b = document.createElement('div');
+        b.className = 'voice-note-player ' + (isMine ? 'bg-indigo-600/15 border-indigo-500/30' : '');
+        b.innerHTML =
+          '<button type="button" class="btn-voice-play grid h-8 w-8 place-items-center rounded-full bg-[var(--c-accent)] text-white shrink-0 hover:scale-105 transition"><svg class="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>' +
+          '<div class="wave-bars"><span class="wave-bar" style="height:12px"></span><span class="wave-bar" style="height:20px"></span><span class="wave-bar" style="height:8px"></span><span class="wave-bar" style="height:18px"></span><span class="wave-bar" style="height:15px"></span><span class="wave-bar" style="height:22px"></span><span class="wave-bar" style="height:10px"></span></div>' +
+          '<span class="text-xs font-mono font-bold text-muted tabular-nums">' + duration + '</span>';
+        
+        var playBtn = b.querySelector('.btn-voice-play');
+        if (playBtn) {
+          playBtn.addEventListener('click', function () {
+            b.classList.toggle('is-playing');
+            if (window.HiveAudio) window.HiveAudio.playClick();
+          });
+        }
+      } else {
+        b = document.createElement('div');
+        b.className = 'bubble ' + (isMine ? 'bubble-mine' : 'bubble-theirs');
+        b.textContent = m.content;
+      }
 
       var ts = document.createElement('span');
       ts.className = 'text-[10px] text-muted mt-1 px-1';
@@ -543,6 +673,53 @@
     });
   }
 
+  // Səsli Mesaj Göndərilməsi (Simulyasiya)
+  var voiceBtn = H.el('threadVoiceBtn');
+  if (voiceBtn) {
+    voiceBtn.addEventListener('click', function () {
+      if (!state.activeThread) return;
+      if (window.HiveAudio) window.HiveAudio.playPop();
+      var dur = '0:' + (Math.floor(Math.random() * 25) + 12);
+      var voiceContent = '[VOICE_NOTE:' + dur + ']';
+      H.api.sendDirect(state.activeThread, voiceContent)
+        .then(function () {
+          return H.api.thread(state.activeThread);
+        })
+        .then(function (res) {
+          renderThread(Array.isArray(res) ? res : []);
+          loadConversations();
+          H.toast('Səsli mesaj göndərildi.', 'success');
+        })
+        .catch(function (err) { H.toast(err.message, 'error'); });
+    });
+  }
+
+  // Emoji Seçici Paneli (Yalnız çatda)
+  var emojiToggle = H.el('threadEmojiToggle');
+  var emojiTray = H.el('chatEmojiTray');
+  if (emojiToggle && emojiTray) {
+    emojiToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      emojiTray.classList.toggle('hidden');
+    });
+    document.addEventListener('click', function (e) {
+      if (!emojiTray.contains(e.target) && e.target !== emojiToggle) {
+        emojiTray.classList.add('hidden');
+      }
+    });
+    emojiTray.querySelectorAll('[data-insert-emoji]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = H.el('threadInput');
+        if (input) {
+          input.value += btn.dataset.insertEmoji;
+          input.focus();
+        }
+        if (window.HiveAudio) window.HiveAudio.playClick();
+        emojiTray.classList.add('hidden');
+      });
+    });
+  }
+
   var threadForm = H.el('threadForm');
   if (threadForm) {
     threadForm.addEventListener('submit', function (e) {
@@ -553,6 +730,7 @@
 
       var subBtn = H.el('threadSubmit');
       H.setLoading(subBtn, true, '...');
+      if (window.HiveAudio) window.HiveAudio.playPop();
 
       H.api.sendDirect(state.activeThread, val)
         .then(function () {
@@ -562,6 +740,20 @@
         .then(function (res) {
           renderThread(Array.isArray(res) ? res : []);
           loadConversations();
+
+          // Əgər həmsöhbət AI botdursa, yazır animasiyasını göstər
+          var isAiPartner = Boolean(state.aiNames && state.aiNames[state.activeThread]);
+          if (isAiPartner) {
+            var typingEl = H.el('threadTypingIndicator');
+            if (typingEl) H.show(typingEl, true);
+            setTimeout(function () {
+              if (typingEl) H.show(typingEl, false);
+              H.api.thread(state.activeThread).then(function (res2) {
+                renderThread(Array.isArray(res2) ? res2 : []);
+                loadConversations();
+              });
+            }, 1400);
+          }
         })
         .catch(function (err) { H.toast(err.message, 'error'); })
         .then(function () { H.setLoading(subBtn, false); });
@@ -1071,6 +1263,9 @@
           H.saveUser(state.user);
         }
 
+        if (window.HiveAudio) window.HiveAudio.playCoin();
+        if (lvl === 3 && window.HiveConfetti) window.HiveConfetti.fire(80);
+
         updateWalletUI();
         openClueModal(state.activeClueMessage);
         loadNotifications();
@@ -1101,6 +1296,7 @@
     H.setText(H.el('checkoutPackageAmount'), pkg.amount);
     H.setText(H.el('checkoutSubmitLabel'), pkg.amount + ' Ödənişi Tamamla');
 
+    if (window.HiveAudio) window.HiveAudio.playClick();
     var modal = H.el('checkoutModal');
     if (modal) modal.classList.add('is-open');
   }
@@ -1189,6 +1385,10 @@
         H.setText(H.el('receiptNewCoins'), res.coins + ' Sikkə');
         H.setText(H.el('receiptMessage'), res.message);
 
+        // Uğurlu ödəniş zəngi və konfeti atəşfəşanlığı
+        if (window.HiveAudio) window.HiveAudio.playSuccess();
+        if (window.HiveConfetti) window.HiveConfetti.fire(160);
+
         var rModal = H.el('receiptModal');
         if (rModal) rModal.classList.add('is-open');
 
@@ -1203,6 +1403,68 @@
     H.el('receiptCloseBtn').addEventListener('click', function () {
       var rModal = H.el('receiptModal');
       if (rModal) rModal.classList.remove('is-open');
+    });
+  }
+
+  if (H.el('printReceiptBtn')) {
+    H.el('printReceiptBtn').addEventListener('click', function () {
+      if (window.HiveAudio) window.HiveAudio.playClick();
+      window.print();
+    });
+  }
+
+  /* ---------- Instagram Story & Status Kartı Modalı ---------- */
+  var storyModal = H.el('storyModal');
+  var storyCanvas = H.el('storyCanvas');
+  var openStoryBtn = H.el('openStoryCardModal');
+  var storyModalClose = H.el('storyModalClose');
+  var downloadStoryBtn = H.el('downloadStoryBtn');
+  var copyStoryLinkBtn = H.el('copyStoryLinkBtn');
+
+  function openStoryModal() {
+    if (!state.user || !storyModal || !storyCanvas || !window.HiveStoryCard) return;
+    if (window.HiveAudio) window.HiveAudio.playClick();
+
+    var fullName = ((state.user.firstName || '') + ' ' + (state.user.lastName || '')).trim() || state.user.username;
+    var profileUrl = location.origin + '/profile.html?u=' + encodeURIComponent(state.user.username);
+
+    window.HiveStoryCard.renderCard(storyCanvas, {
+      fullName: fullName,
+      username: state.user.username,
+      university: state.user.university || 'Milli Aviasiya Akademiyası',
+      isAbituriyent: !!state.user.isAbituriyent,
+      targetGroup: state.user.targetGroup || '',
+      url: profileUrl
+    });
+
+    storyModal.classList.add('is-open');
+  }
+
+  function closeStoryModal() {
+    if (storyModal) storyModal.classList.remove('is-open');
+  }
+
+  if (openStoryBtn) openStoryBtn.addEventListener('click', openStoryModal);
+  if (storyModalClose) storyModalClose.addEventListener('click', closeStoryModal);
+
+  if (downloadStoryBtn) {
+    downloadStoryBtn.addEventListener('click', function () {
+      if (!storyCanvas || !window.HiveStoryCard) return;
+      window.HiveStoryCard.downloadCard(storyCanvas, 'hive-story-' + (state.user ? state.user.username : 'user') + '.png');
+      if (window.HiveAudio) window.HiveAudio.playSuccess();
+      if (window.HiveConfetti) window.HiveConfetti.fire(100);
+      H.toast('Story kartı PNG olaraq yükləndi!', 'success');
+    });
+  }
+
+  if (copyStoryLinkBtn) {
+    copyStoryLinkBtn.addEventListener('click', function () {
+      if (!state.user) return;
+      var link = location.origin + '/profile.html?u=' + encodeURIComponent(state.user.username);
+      H.copyToClipboard(link).then(function () {
+        if (window.HiveAudio) window.HiveAudio.playClick();
+        H.toast('Profil linki kopyalandı!', 'success');
+      });
     });
   }
 

@@ -1,0 +1,23 @@
+{
+  "name": "Hive — Tələbə və Abituriyent Sosial Şəbəkəsi",
+  "short_name": "Hive",
+  "description": "Azərbaycanın ilk akademik sosial şəbəkəsi və anonim sual platforması",
+  "start_url": "/app.html",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#6366F1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/brand/hive-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/brand/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

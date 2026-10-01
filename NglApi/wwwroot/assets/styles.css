@@ -848,6 +848,191 @@ html[data-theme="dark"] .uni-logo-float {
 .bg-surface { background: var(--c-surface); }
 .bg-surface-2 { background: var(--c-surface-2); }
 
+/* =============================================================================
+ * Pro Component Styles
+ * ========================================================================== */
+
+/* Instagram Story Card Mockup */
+.story-card-preview-wrap {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 9 / 16;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 2px var(--c-border);
+  position: relative;
+  background: #090D16;
+  margin: 0 auto;
+}
+.story-card-preview-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* Feed Filter Pills */
+.feed-filter-btn {
+  border-radius: 9999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-muted);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.feed-filter-btn:hover {
+  background: var(--c-surface-2);
+  color: var(--c-text);
+}
+.feed-filter-btn.is-active {
+  background: var(--c-accent);
+  color: #FFFFFF;
+  border-color: var(--c-accent);
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.35);
+}
+
+/* Like Heart Animation */
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.btn-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--c-muted);
+  transition: all 0.18s ease;
+}
+.btn-like:hover {
+  background: rgba(244, 63, 94, 0.08);
+  color: #F43F5E;
+}
+.btn-like.is-liked {
+  color: #F43F5E;
+  background: rgba(244, 63, 94, 0.12);
+}
+.btn-like.is-liked svg {
+  animation: heart-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  fill: #F43F5E;
+  stroke: #F43F5E;
+}
+
+/* Voice Note Waveform Simulator */
+.voice-note-player {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 1rem;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  max-width: 280px;
+}
+.wave-bars {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+  flex: 1;
+}
+.wave-bar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--c-accent);
+  opacity: 0.6;
+  transition: height 0.2s ease, opacity 0.2s ease;
+}
+.voice-note-player.is-playing .wave-bar {
+  animation: wave-bounce 1s ease-in-out infinite alternate;
+}
+@keyframes wave-bounce {
+  0% { height: 6px; }
+  100% { height: 22px; }
+}
+
+/* Typing Indicator (Dancing Dots) */
+@keyframes typing-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1.1); opacity: 1; }
+}
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.5rem 0.85rem;
+  border-radius: 1rem;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+}
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  animation: typing-bounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+/* Emoji Tray Popover for Direct Chat */
+.emoji-tray {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 40;
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 1rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(12px);
+}
+.emoji-btn {
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 4px;
+  border-radius: 0.5rem;
+  transition: transform 0.15s ease, background 0.15s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.emoji-btn:hover {
+  transform: scale(1.25);
+  background: var(--c-surface-2);
+}
+
+/* Audio Mute Button */
+.btn-sound-toggle {
+  display: grid;
+  place-items: center;
+  height: 2.25rem;
+  width: 2.25rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--c-border);
+  color: var(--c-muted);
+  transition: all 0.2s ease;
+}
+.btn-sound-toggle:hover {
+  background: var(--c-surface-2);
+  color: var(--c-accent);
+}
+.btn-sound-toggle.is-muted {
+  color: var(--c-muted);
+  opacity: 0.6;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {

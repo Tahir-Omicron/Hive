@@ -78,8 +78,10 @@
       H.api.login({ username: username, password: password })
         .then(function (auth) {
           H.saveSession(auth);
+          if (window.HiveAudio) window.HiveAudio.playSuccess();
+          if (window.HiveConfetti) window.HiveConfetti.fire(70);
           H.toast(I.t('app.welcome') + ', @' + auth.user.username + '!', 'success');
-          redirectAfterAuth();
+          setTimeout(redirectAfterAuth, 450);
         })
         .catch(function (error) {
           H.setText(errorBox, error.message);
@@ -327,8 +329,10 @@
       H.api.register(payload)
         .then(function (auth) {
           H.saveSession(auth);
+          if (window.HiveAudio) window.HiveAudio.playSuccess();
+          if (window.HiveConfetti) window.HiveConfetti.fire(120);
           H.toast(I.t('app.welcome') + ', @' + auth.user.username + '!', 'success');
-          redirectAfterAuth();
+          setTimeout(redirectAfterAuth, 500);
         })
         .catch(function (error) {
           if (error.fieldErrors) {

@@ -126,6 +126,8 @@
 
       H.api.sendAnonymous(username, content)
         .then(function () {
+          if (window.HiveAudio) window.HiveAudio.playPop();
+          if (window.HiveConfetti) window.HiveConfetti.fire(75);
           input.value = '';
           updateCount();
           H.show(form, false);

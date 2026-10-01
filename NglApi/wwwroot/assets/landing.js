@@ -217,23 +217,59 @@
     var nextBtn = H.el('uniNextBtn');
     var counterEl = H.el('uniCounter');
     var thumbTrack = H.el('uniThumbTrack');
+    var quickSearchInput = H.el('uniQuickSearch');
     if (!stage) return;
 
     var RAW_LIST = (window.HIVE_UNIVERSITIES || []).slice();
     if (!RAW_LIST.length) return;
 
     var currentFilter = 'all';
+    var searchQuery = '';
     var currentIndex = 0;
     var autoPlayTimer = null;
 
     function getFilteredList() {
-      if (currentFilter === 'all') return RAW_LIST;
-      return RAW_LIST.filter(function (item) { return item.category === currentFilter; });
+      var list = RAW_LIST;
+      if (currentFilter !== 'all') {
+        list = list.filter(function (item) { return item.category === currentFilter; });
+      }
+      if (searchQuery) {
+        var q = searchQuery.toLowerCase().trim();
+        list = list.filter(function (item) {
+          return (item.name && item.name.toLowerCase().indexOf(q) !== -1) ||
+                 (item.short && item.short.toLowerCase().indexOf(q) !== -1) ||
+                 (item.categoryLabel && item.categoryLabel.toLowerCase().indexOf(q) !== -1);
+        });
+      }
+      return list;
     }
 
     function renderSpotlight(animate) {
       var list = getFilteredList();
-      if (!list.length) return;
+      if (!list.length) {
+        if (counterEl) counterEl.textContent = '0 / 0';
+        if (thumbTrack) thumbTrack.innerHTML = '';
+        stage.innerHTML =
+          '<div class="py-14 text-center text-muted">' +
+            '<div class="mx-auto mb-3 h-12 w-12 rounded-full border border-line bg-[var(--c-surface)] flex items-center justify-center text-muted">' +
+              '<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>' +
+            '</div>' +
+            '<p class="text-sm font-semibold text-[var(--c-text)]">Axtarışa uyğun universitet tapılmadı</p>' +
+            '<p class="text-xs text-muted mt-1">Digər açar sözü sınayın və ya filtrləri sıfırlayın.</p>' +
+            '<button type="button" class="btn btn-outline !py-1.5 !px-3 text-xs mt-4" id="clearUniSearchBtn">Axtarışı təmizlə</button>' +
+          '</div>';
+        var clearBtn = document.getElementById('clearUniSearchBtn');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function () {
+            if (quickSearchInput) quickSearchInput.value = '';
+            searchQuery = '';
+            currentIndex = 0;
+            renderSpotlight(true);
+            resetAutoPlay();
+          });
+        }
+        return;
+      }
       if (currentIndex >= list.length) currentIndex = 0;
       if (currentIndex < 0) currentIndex = list.length - 1;
 
@@ -317,6 +353,7 @@
         btn.innerHTML = '<img src="' + item.logo + '" alt="' + item.short + '" />';
 
         btn.addEventListener('click', function () {
+          if (window.HiveAudio) window.HiveAudio.playClick();
           currentIndex = idx;
           renderSpotlight(true);
           resetAutoPlay();
@@ -340,6 +377,7 @@
 
     if (nextBtn) {
       nextBtn.addEventListener('click', function () {
+        if (window.HiveAudio) window.HiveAudio.playClick();
         next();
         resetAutoPlay();
       });
@@ -347,6 +385,7 @@
 
     if (prevBtn) {
       prevBtn.addEventListener('click', function () {
+        if (window.HiveAudio) window.HiveAudio.playClick();
         prev();
         resetAutoPlay();
       });
@@ -381,6 +420,16 @@
           b.classList.toggle('is-active', b === btn);
         });
 
+        if (window.HiveAudio) window.HiveAudio.playClick();
+        renderSpotlight(true);
+        resetAutoPlay();
+      });
+    }
+
+    if (quickSearchInput) {
+      quickSearchInput.addEventListener('input', function (e) {
+        searchQuery = (e.target.value || '').trim();
+        currentIndex = 0;
         renderSpotlight(true);
         resetAutoPlay();
       });
