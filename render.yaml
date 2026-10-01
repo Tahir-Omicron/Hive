@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: hive-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /healthz
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 8080
+      - key: Jwt__Key
+        value: 7b36f1c4e892d41a5b882903e1a8cf29b40e7912a83cfd58a1
+      - key: Jwt__Issuer
+        value: HiveApi
+      - key: Jwt__Audience
+        value: HiveClient
+      - key: Cors__AllowedOrigins
+        value: "https://hive-frontend.vercel.app,https://hive.vercel.app,http://localhost:3000,http://localhost:5000"
+      - key: ConnectionStrings__Postgres
+        sync: false # Supabase PostgreSQL connection string

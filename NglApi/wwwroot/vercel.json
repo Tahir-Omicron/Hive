@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "^/$", "dest": "/landingpage.html" },
+    { "src": "^/landing$", "dest": "/landingpage.html" },
+    { "src": "^/landingpage(\\.html)?$", "dest": "/landingpage.html" },
+    { "src": "^/login$", "dest": "/loginpage.html" },
+    { "src": "^/loginpage(\\.html)?$", "dest": "/loginpage.html" },
+    { "src": "^/register$", "dest": "/registerpage.html" },
+    { "src": "^/registerpage(\\.html)?$", "dest": "/registerpage.html" },
+    { "src": "^/app$", "dest": "/app.html" },
+    { "src": "^/app(\\.html)?$", "dest": "/app.html" },
+    { "src": "^/profile$", "dest": "/profile.html" },
+    { "src": "^/profile(\\.html)?$", "dest": "/profile.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}

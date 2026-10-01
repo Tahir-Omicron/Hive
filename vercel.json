@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "public": true,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "^/$", "dest": "/NglApi/wwwroot/landingpage.html" },
+    { "src": "^/landing$", "dest": "/NglApi/wwwroot/landingpage.html" },
+    { "src": "^/landingpage(\\.html)?$", "dest": "/NglApi/wwwroot/landingpage.html" },
+    { "src": "^/login$", "dest": "/NglApi/wwwroot/loginpage.html" },
+    { "src": "^/loginpage(\\.html)?$", "dest": "/NglApi/wwwroot/loginpage.html" },
+    { "src": "^/register$", "dest": "/NglApi/wwwroot/registerpage.html" },
+    { "src": "^/registerpage(\\.html)?$", "dest": "/NglApi/wwwroot/registerpage.html" },
+    { "src": "^/app$", "dest": "/NglApi/wwwroot/app.html" },
+    { "src": "^/app(\\.html)?$", "dest": "/NglApi/wwwroot/app.html" },
+    { "src": "^/profile$", "dest": "/NglApi/wwwroot/profile.html" },
+    { "src": "^/profile(\\.html)?$", "dest": "/NglApi/wwwroot/profile.html" },
+    { "src": "/assets/(.*)", "dest": "/NglApi/wwwroot/assets/$1" },
+    { "src": "/(.*)", "dest": "/NglApi/wwwroot/$1" }
+  ]
+}

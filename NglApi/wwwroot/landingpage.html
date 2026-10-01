@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="az" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F8FAFC" />
+  <title>Hive — Tələbələr üçün platforma</title>
+  <meta name="description" content="Hive — universitet tələbələri üçün platforma. Akademik profil, anonim mesajlar, Direct yazışma və axtarış." />
+
+  <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
+
+  <!-- Tema səhifə boyanmadan əvvəl tətbiq olunur (FOUC olmasın) -->
+  <script src="assets/theme.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body class="min-h-dvh">
+
+  <!-- ============================ HEADER ============================ -->
+  <div id="scrollSentinel" aria-hidden="true" class="h-px w-full"></div>
+
+  <header id="siteHeader" class="glass sticky top-0 z-40 border-b border-line">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+
+      <a href="#home" class="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-95" aria-label="Hive">
+        <img src="assets/brand/hive-icon.svg" alt="" class="h-9 w-9 shrink-0 drop-shadow-sm transition-transform duration-200 hover:scale-105" width="36" height="36" />
+        <span class="text-xl font-extrabold tracking-tight">Hive</span>
+      </a>
+
+      <!-- Masaüstü naviqasiya -->
+      <nav class="hidden items-center gap-8 lg:flex" aria-label="Əsas naviqasiya">
+        <a href="#home" class="nav-link" data-i18n="nav.home"></a>
+        <a href="#about" class="nav-link" data-i18n="nav.about"></a>
+        <a href="#contact" class="nav-link" data-i18n="nav.contact"></a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <!-- Dil seçimi -->
+        <select data-lang-select aria-label="Language"
+          class="hidden rounded-xl border border-line bg-[var(--c-surface)] px-2.5 py-2 text-xs font-semibold sm:block">
+          <option value="az">AZ</option>
+          <option value="ru">RU</option>
+          <option value="tr">TR</option>
+          <option value="en">EN</option>
+        </select>
+
+        <!-- Gündüz / gecə -->
+        <button type="button" data-theme-toggle data-i18n-aria="nav.theme" aria-pressed="false"
+          class="grid h-10 w-10 place-items-center rounded-xl border border-line text-[var(--c-muted)] transition hover:bg-[var(--c-surface-2)]">
+          <svg data-icon-sun class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4" />
+          </svg>
+          <svg data-icon-moon class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z" />
+          </svg>
+        </button>
+
+        <a href="loginpage.html" class="btn btn-ghost hidden sm:inline-flex" data-i18n="nav.signin"></a>
+        <a href="registerpage.html" class="btn btn-accent shine" data-i18n="nav.signup"></a>
+
+        <!-- Mobil menyu düyməsi -->
+        <button id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu" data-i18n-aria="nav.menu"
+          class="grid h-10 w-10 place-items-center rounded-xl border border-line lg:hidden">
+          <span class="flex flex-col items-center gap-1.5">
+            <span class="burger-line burger-top block h-0.5 w-5 rounded bg-current"></span>
+            <span class="burger-line burger-mid block h-0.5 w-5 rounded bg-current"></span>
+            <span class="burger-line burger-bottom block h-0.5 w-5 rounded bg-current"></span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobil menyu -->
+    <div id="mobileMenu" class="border-t border-line bg-[var(--c-surface)] lg:hidden">
+      <nav class="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-6" aria-label="Mobil naviqasiya">
+        <a href="#home" class="rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-[var(--c-surface-2)]" data-i18n="nav.home"></a>
+        <a href="#about" class="rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-[var(--c-surface-2)]" data-i18n="nav.about"></a>
+        <a href="#contact" class="rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-[var(--c-surface-2)]" data-i18n="nav.contact"></a>
+
+        <div class="mt-1 flex items-center gap-2 border-t border-line px-3 pt-3">
+          <select data-lang-select aria-label="Language" class="rounded-xl border border-line bg-[var(--c-bg)] px-2.5 py-2 text-xs font-semibold">
+            <option value="az">AZ</option>
+            <option value="ru">RU</option>
+            <option value="tr">TR</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+
+        <div class="grid gap-2 px-3 py-3 sm:hidden">
+          <a href="loginpage.html" class="btn btn-outline" data-i18n="nav.signin"></a>
+          <a href="registerpage.html" class="btn btn-accent" data-i18n="nav.signup"></a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================ HOME ============================ -->
+    <section id="home" class="relative overflow-hidden">
+      <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[var(--c-accent)] opacity-[0.10] blur-3xl"></div>
+
+      <!-- Yumşaq üzən bubble-lar (yalnız transform animasiyası) -->
+      <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <span class="float-bubble left-[6%] top-[16%] h-40 w-40" style="animation-delay:-2s"></span>
+        <span class="float-bubble is-ai right-[10%] top-[6%] h-24 w-24" style="animation-delay:-7s"></span>
+        <span class="float-bubble left-[42%] bottom-[10%] h-16 w-16" style="animation-delay:-4s"></span>
+        <span class="float-bubble right-[26%] bottom-[16%] h-28 w-28" style="animation-delay:-9s"></span>
+        <span class="float-bubble left-[18%] top-[62%] h-12 w-12" style="animation-delay:-6s"></span>
+      </div>
+
+      <div class="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-16 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:pb-24">
+        <div>
+          <span data-reveal class="inline-flex items-center gap-2 rounded-full border border-line bg-[var(--c-surface)] px-3.5 py-1.5 text-xs font-semibold">
+            <span class="relative flex h-2 w-2">
+              <span class="pulse-ring absolute inline-flex h-full w-full rounded-full bg-[var(--c-accent)]"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--c-accent)]"></span>
+            </span>
+            <span data-i18n="hero.badge"></span>
+          </span>
+
+          <h1 data-reveal style="--reveal-delay:70ms" class="mt-6 text-4xl font-extrabold leading-[1.12] tracking-tight sm:text-5xl lg:text-[3.1rem]" data-i18n="hero.title"></h1>
+          <p data-reveal style="--reveal-delay:140ms" class="mt-5 max-w-xl text-base leading-relaxed text-muted" data-i18n="hero.text"></p>
+
+          <div data-reveal style="--reveal-delay:210ms" class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="registerpage.html" class="btn btn-accent shine" data-i18n="hero.cta1"></a>
+            <a href="#about" data-scroll class="btn btn-outline" data-i18n="hero.cta2"></a>
+          </div>
+        </div>
+
+        <!-- Vizual kart -->
+        <div data-reveal style="--reveal-delay:180ms" class="mx-auto w-full max-w-sm">
+          <div class="float-slow surface p-6 shadow-[var(--shadow-md)]">
+            <div class="flex items-center gap-3">
+              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--c-accent)] text-lg font-bold text-[var(--c-on-accent)]">T</span>
+              <div>
+                <p class="text-sm font-bold">@tahirquliyev01</p>
+                <p class="text-xs text-muted">Milli Aviasiya Akademiyası · 4-cü kurs</p>
+              </div>
+            </div>
+            <div class="mt-5 space-y-2.5">
+              <div class="rounded-xl border border-line bg-[var(--c-bg)] px-3.5 py-3">
+                <p class="text-xs leading-relaxed text-muted">Salam! Qrup işi üzrə yazmaq istəyirdim.</p>
+              </div>
+              <div class="rounded-xl border border-line bg-[var(--c-bg)] px-3.5 py-3">
+                <p class="text-xs leading-relaxed text-muted">Təqdimatın çox aydın idi, təşəkkürlər.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Xidmətlər -->
+      <div class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
+        <div class="mx-auto max-w-2xl text-center">
+          <h2 data-reveal class="text-3xl font-extrabold tracking-tight sm:text-4xl" data-i18n="services.title"></h2>
+          <p data-reveal style="--reveal-delay:70ms" class="mt-4 text-muted" data-i18n="services.subtitle"></p>
+        </div>
+
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <article data-reveal class="lift surface p-6">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </span>
+            <h3 class="mt-4 text-base font-semibold" data-i18n="services.1.t"></h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted" data-i18n="services.1.d"></p>
+          </article>
+
+          <article data-reveal style="--reveal-delay:70ms" class="lift surface p-6">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+            </span>
+            <h3 class="mt-4 text-base font-semibold" data-i18n="services.2.t"></h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted" data-i18n="services.2.d"></p>
+          </article>
+
+          <article data-reveal style="--reveal-delay:140ms" class="lift surface p-6">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H7l-3 3Z"/><path d="M8 9h8M8 12h5"/></svg>
+            </span>
+            <h3 class="mt-4 text-base font-semibold" data-i18n="services.3.t"></h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted" data-i18n="services.3.d"></p>
+          </article>
+
+          <article data-reveal style="--reveal-delay:210ms" class="lift surface p-6">
+            <span class="grid h-11 w-11 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </span>
+            <h3 class="mt-4 text-base font-semibold" data-i18n="services.4.t"></h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted" data-i18n="services.4.d"></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ UNIVERSİTETLƏR ============================ -->
+    <section id="universitetler" class="border-t border-line py-16 sm:py-20 lg:py-24">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <span data-reveal class="badge badge-accent mb-3 inline-flex">Azərbaycan Tələbə Şəbəkəsi</span>
+          <h2 data-reveal class="text-3xl font-extrabold tracking-tight sm:text-4xl" data-i18n="landing.uni.title">Universitetlərin Canlı Kampus İcması</h2>
+          <p data-reveal style="--reveal-delay:70ms" class="mt-4 text-base text-muted" data-i18n="landing.uni.text">
+            Öz universitetini seç, kurs yoldaşlarını tap, fənlər üzrə anonim suallar ver və dərslərin nəbzini tut.
+          </p>
+
+          <!-- Kateqoriya Filtrləri -->
+          <div data-reveal style="--reveal-delay:120ms" class="mt-8 flex flex-wrap items-center justify-center gap-2" id="uniFilters">
+            <button type="button" class="chip is-active" data-cat="all">Bütün Universitetlər (15)</button>
+            <button type="button" class="chip" data-cat="tech">Mühəndislik & Texnologiya</button>
+            <button type="button" class="chip" data-cat="state">Dövlət Universitetləri</button>
+            <button type="button" class="chip" data-cat="intl">Beynəlxalq & Özəl</button>
+          </div>
+        </div>
+
+        <!-- Universitetlər Ardıcıl Lupa & İşıq Nöqtəsi Vitrini -->
+        <div class="mt-12 mx-auto max-w-5xl" data-reveal style="--reveal-delay:180ms">
+          <!-- Spotlight / Lupa Card -->
+          <div id="uniSpotlightContainer" class="uni-lupa-stage rounded-3xl p-6 sm:p-8 transition-all duration-500">
+            <!-- Dynamically populated by landing.js -->
+          </div>
+
+          <!-- Lupa İdarəetmə Paneli & Miniatür Lent -->
+          <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <button type="button" id="uniPrevBtn" class="grid h-10 w-10 place-items-center rounded-xl border border-line bg-[var(--c-surface)] text-[var(--c-text)] shadow-sm transition hover:bg-[var(--c-surface-2)] active:scale-95" aria-label="Əvvəlki Universitet">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button type="button" id="uniNextBtn" class="grid h-10 w-10 place-items-center rounded-xl border border-line bg-[var(--c-surface)] text-[var(--c-text)] shadow-sm transition hover:bg-[var(--c-surface-2)] active:scale-95" aria-label="Növbəti Universitet">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+              <span id="uniCounter" class="text-xs font-bold text-muted tabular-nums">1 / 15</span>
+              <span class="inline-flex items-center gap-1.5 text-xs text-muted">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Fokus Modu</span>
+              </span>
+            </div>
+
+            <!-- Miniatür Lent -->
+            <div id="uniThumbTrack" class="flex items-center gap-2 overflow-x-auto py-1 max-w-full sm:max-w-xl">
+              <!-- Dynamically populated thumbnail icons -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Məlumat & Qeyd -->
+        <div class="mt-10 flex flex-col items-center justify-center gap-2 text-center text-xs text-muted sm:flex-row">
+          <span>Universitet binaları və rəsmi gerblər</span>
+          <span class="hidden sm:inline">·</span>
+          <span><a href="https://commons.wikimedia.org/" target="_blank" rel="noopener noreferrer" class="font-semibold text-accent hover:underline">Wikimedia Commons</a> və Rəsmi Tədris Portalları</span>
+          <span class="hidden sm:inline">·</span>
+          <a href="CREDITS.md" class="font-semibold text-accent hover:underline">Lisenziyalar (CREDITS.md)</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ ABOUT US ============================ -->
+    <section id="about" class="bg-alt border-y border-line py-16 sm:py-20 lg:py-24">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <h2 data-reveal class="text-3xl font-extrabold tracking-tight sm:text-4xl" data-i18n="about.title"></h2>
+            <p data-reveal style="--reveal-delay:70ms" class="mt-5 text-base leading-relaxed text-muted" data-i18n="about.text"></p>
+          </div>
+
+          <div class="space-y-4">
+            <div data-reveal class="lift surface flex gap-4 p-5">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+              </span>
+              <div>
+                <h3 class="text-sm font-semibold" data-i18n="about.p1.t"></h3>
+                <p class="mt-1 text-sm leading-relaxed text-muted" data-i18n="about.p1.d"></p>
+              </div>
+            </div>
+
+            <div data-reveal style="--reveal-delay:70ms" class="lift surface flex gap-4 p-5">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-5"/></svg>
+              </span>
+              <div>
+                <h3 class="text-sm font-semibold" data-i18n="about.p2.t"></h3>
+                <p class="mt-1 text-sm leading-relaxed text-muted" data-i18n="about.p2.d"></p>
+              </div>
+            </div>
+
+            <div data-reveal style="--reveal-delay:140ms" class="lift surface flex gap-4 p-5">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+              </span>
+              <div>
+                <h3 class="text-sm font-semibold" data-i18n="about.p3.t"></h3>
+                <p class="mt-1 text-sm leading-relaxed text-muted" data-i18n="about.p3.d"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ CONTACT ============================ -->
+    <section id="contact" class="relative overflow-hidden border-t border-line py-16 sm:py-20 lg:py-24">
+      <!-- Zərif arxa plan parıltısı -->
+      <div class="pointer-events-none absolute -left-20 top-1/4 h-80 w-80 rounded-full bg-[var(--c-accent)] opacity-[0.06] blur-3xl" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-[var(--c-accent)] opacity-[0.04] blur-3xl" aria-hidden="true"></div>
+
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid items-start gap-12 lg:grid-cols-12 lg:gap-14">
+
+          <!-- Sol sütun: İcma və Dəstək Mərkəzi (5 sütun) -->
+          <div class="lg:col-span-5">
+            <span data-reveal class="inline-flex items-center gap-2 rounded-full border border-line bg-[var(--c-surface)] px-3.5 py-1.5 text-xs font-semibold">
+              <span class="live-pulse-dot">
+                <span class="live-pulse-ring"></span>
+                <span class="live-pulse-core"></span>
+              </span>
+              <span data-i18n="contact.badge"></span>
+            </span>
+
+            <h2 data-reveal style="--reveal-delay:70ms" class="mt-5 text-3xl font-extrabold tracking-tight sm:text-4xl" data-i18n="contact.title"></h2>
+            <p data-reveal style="--reveal-delay:120ms" class="mt-4 text-base leading-relaxed text-muted" data-i18n="contact.text"></p>
+
+            <!-- Bento-style əlaqə kartları -->
+            <div data-reveal style="--reveal-delay:180ms" class="mt-8 space-y-3.5">
+
+              <!-- E-poçt kartı (kopyalama və birbaşa yazma ilə) -->
+              <div class="contact-bento-card">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+                      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                    </span>
+                    <div>
+                      <span class="block text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="contact.email"></span>
+                      <a href="mailto:destek@hive.az" class="mt-0.5 block text-base font-bold tracking-tight transition hover:text-accent">destek@hive.az</a>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" id="copyEmailBtn" class="btn btn-outline h-8 px-2.5 text-xs font-semibold" title="E-poçtu kopyala">
+                      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                      <span data-i18n="contact.copy"></span>
+                    </button>
+                    <a href="mailto:destek@hive.az" class="btn btn-ghost h-8 px-2 text-xs font-semibold text-muted hover:text-accent" title="Məktub aç">
+                      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Canlı dəstək və cavab müddəti -->
+              <div class="contact-bento-card">
+                <div class="flex items-center gap-3">
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-500/10 text-emerald-500">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </span>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold uppercase tracking-wider text-emerald-500" data-i18n="contact.status"></span>
+                      <span class="h-1 w-1 rounded-full bg-emerald-500"></span>
+                      <span class="text-xs text-muted" data-i18n="contact.hours"></span>
+                    </div>
+                    <p class="mt-0.5 truncate text-sm font-semibold" data-i18n="contact.hours"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mərkəz və İcma Şəbəkəsi -->
+              <div class="contact-bento-card">
+                <div class="flex items-center gap-3">
+                  <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--c-accent-soft)] text-[var(--c-accent)]">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  </span>
+                  <div>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="contact.location"></span>
+                    <span class="mt-0.5 block text-sm font-semibold" data-i18n="contact.location.value"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tələbə klubları və təşkilatlar üçün bələdçi kart -->
+              <div class="rounded-2xl border border-dashed border-line bg-[var(--c-surface-2)]/60 p-4">
+                <div class="flex items-start gap-3">
+                  <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[var(--c-surface)] text-[var(--c-accent)] shadow-sm">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  </span>
+                  <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--c-text)]" data-i18n="contact.faq.title"></h3>
+                    <p class="mt-1 text-xs leading-relaxed text-muted" data-i18n="contact.faq.desc"></p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Sağ sütun: Müasir İnteraktiv Forma (7 sütun) -->
+          <div class="lg:col-span-7">
+            <div data-reveal style="--reveal-delay:150ms" class="contact-form-glow surface rounded-3xl p-6 shadow-[var(--shadow-md)] sm:p-8 lg:p-9">
+
+              <form id="contactForm" novalidate>
+                <!-- Mövzu seçimi (Topic chips) -->
+                <div class="mb-6">
+                  <label class="mb-2.5 block text-xs font-bold uppercase tracking-wider text-muted" data-i18n="contact.topic.label"></label>
+                  <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Müraciət mövzusu">
+                    <label class="cursor-pointer">
+                      <input type="radio" name="contactTopic" value="general" class="topic-chip-input sr-only" checked />
+                      <span class="topic-chip-label" data-i18n="contact.topic.general"></span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="contactTopic" value="university" class="topic-chip-input sr-only" />
+                      <span class="topic-chip-label" data-i18n="contact.topic.uni"></span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="contactTopic" value="technical" class="topic-chip-input sr-only" />
+                      <span class="topic-chip-label" data-i18n="contact.topic.tech"></span>
+                    </label>
+                    <label class="cursor-pointer">
+                      <input type="radio" name="contactTopic" value="partnership" class="topic-chip-input sr-only" />
+                      <span class="topic-chip-label" data-i18n="contact.topic.partner"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Ad və Soyad -->
+                  <div>
+                    <label for="contactName" class="mb-1.5 block text-sm font-semibold" data-i18n="contact.form.name"></label>
+                    <div class="contact-input-wrap">
+                      <input id="contactName" type="text" maxlength="60" class="input" placeholder="Tahir Quliyev" aria-describedby="contactNameError" />
+                      <span class="contact-input-icon" aria-hidden="true">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      </span>
+                    </div>
+                    <p id="contactNameError" class="field-error hidden" role="alert"></p>
+                  </div>
+
+                  <!-- E-poçt -->
+                  <div>
+                    <label for="contactEmail" class="mb-1.5 block text-sm font-semibold" data-i18n="contact.form.email"></label>
+                    <div class="contact-input-wrap">
+                      <input id="contactEmail" type="email" maxlength="150" class="input" placeholder="ad@telebe.edu.az" aria-describedby="contactEmailError" />
+                      <span class="contact-input-icon" aria-hidden="true">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                      </span>
+                    </div>
+                    <p id="contactEmailError" class="field-error hidden" role="alert"></p>
+                  </div>
+
+                  <!-- Mesaj sahəsi və simvol sayğacı -->
+                  <div>
+                    <div class="mb-1.5 flex items-center justify-between">
+                      <label for="contactMessage" class="block text-sm font-semibold" data-i18n="contact.form.message"></label>
+                      <span id="contactCharCount" class="char-counter">0 / 800</span>
+                    </div>
+                    <div class="contact-textarea-wrap">
+                      <textarea id="contactMessage" rows="4" maxlength="800" class="textarea" placeholder="Təklif və ya sualınızı buraya yaza bilərsiniz..." aria-describedby="contactMessageError"></textarea>
+                      <span class="contact-input-icon" aria-hidden="true">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                      </span>
+                    </div>
+                    <p id="contactMessageError" class="field-error hidden" role="alert"></p>
+                  </div>
+
+                  <!-- Göndər düyməsi -->
+                  <div class="pt-2">
+                    <button type="submit" class="btn btn-accent shine flex w-full items-center justify-center gap-2 py-3.5 text-base font-bold">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                      <span data-i18n="contact.form.send"></span>
+                    </button>
+                  </div>
+
+                  <!-- Güvən və yönləndirmə qeydi -->
+                  <div class="space-y-1 pt-1 text-center">
+                    <p class="flex items-center justify-center gap-1.5 text-xs text-muted">
+                      <svg class="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      <span data-i18n="contact.security"></span>
+                    </p>
+                    <p class="text-[11px] text-muted opacity-80" data-i18n="contact.form.note"></p>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="border-t border-line py-14">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+        <!-- Brend -->
+        <div>
+          <div class="flex items-center gap-2.5">
+            <img src="assets/brand/hive-icon.svg" alt="" class="h-9 w-9 shrink-0 drop-shadow-sm" width="36" height="36" />
+            <span class="text-xl font-extrabold tracking-tight">Hive</span>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-muted" data-i18n="footer.tagline"></p>
+
+          <!-- Sosial şəbəkələr — PLACEHOLDER: öz profil linklərinizlə dəyişin -->
+          <div class="mt-5">
+            <p class="text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="footer.follow"></p>
+            <div class="mt-3 flex items-center gap-2">
+              <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                class="grid h-10 w-10 place-items-center rounded-xl border border-line text-[var(--c-muted)] transition hover:bg-[var(--c-surface-2)] hover:text-[var(--c-accent)]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                class="grid h-10 w-10 place-items-center rounded-xl border border-line text-[var(--c-muted)] transition hover:bg-[var(--c-surface-2)] hover:text-[var(--c-accent)]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7h2.4l.4-2.8h-2.8V9.4c0-.8.2-1.4 1.4-1.4h1.5V5.5c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2h-2.4V14h2.4v7Z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                class="grid h-10 w-10 place-items-center rounded-xl border border-line text-[var(--c-muted)] transition hover:bg-[var(--c-surface-2)] hover:text-[var(--c-accent)]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5a2.5 2.5 0 0 0-.02-5ZM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H9Z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keçidlər -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="footer.links"></p>
+          <ul class="mt-4 space-y-2.5">
+            <li><a href="#home" class="text-sm text-muted transition hover:text-accent" data-i18n="nav.home"></a></li>
+            <li><a href="#about" class="text-sm text-muted transition hover:text-accent" data-i18n="nav.about"></a></li>
+            <li><a href="#contact" class="text-sm text-muted transition hover:text-accent" data-i18n="nav.contact"></a></li>
+          </ul>
+        </div>
+
+        <!-- Hüquqi -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="footer.legal"></p>
+          <ul class="mt-4 space-y-2.5">
+            <li><a href="legal.html#privacy" class="text-sm text-muted transition hover:text-accent" data-i18n="footer.legal.privacy"></a></li>
+            <li><a href="legal.html#terms" class="text-sm text-muted transition hover:text-accent" data-i18n="footer.legal.terms"></a></li>
+            <li><a href="legal.html#cookies" class="text-sm text-muted transition hover:text-accent" data-i18n="footer.legal.cookies"></a></li>
+          </ul>
+        </div>
+
+        <!-- Əlaqə + dil -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="footer.contact"></p>
+          <ul class="mt-4 space-y-2.5 text-sm text-muted">
+            <li><a href="mailto:destek@hive.az" class="transition hover:text-accent">destek@hive.az</a></li>
+            <li data-i18n="contact.location.value"></li>
+          </ul>
+
+          <p class="mt-6 text-xs font-semibold uppercase tracking-wider text-muted" data-i18n="footer.language"></p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button type="button" data-lang-option="az" class="rounded-lg border border-line px-2.5 py-1.5 text-xs font-semibold transition hover:bg-[var(--c-surface-2)]">AZ</button>
+            <button type="button" data-lang-option="ru" class="rounded-lg border border-line px-2.5 py-1.5 text-xs font-semibold transition hover:bg-[var(--c-surface-2)]">RU</button>
+            <button type="button" data-lang-option="tr" class="rounded-lg border border-line px-2.5 py-1.5 text-xs font-semibold transition hover:bg-[var(--c-surface-2)]">TR</button>
+            <button type="button" data-lang-option="en" class="rounded-lg border border-line px-2.5 py-1.5 text-xs font-semibold transition hover:bg-[var(--c-surface-2)]">EN</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 sm:flex-row">
+        <p class="text-xs text-muted">© <span id="year">2026</span> Hive. <span data-i18n="footer.rights"></span></p>
+        <a href="registerpage.html" class="text-xs font-semibold text-accent" data-i18n="nav.signup"></a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toasts" class="pointer-events-none fixed inset-x-0 top-3 z-50 flex flex-col items-center gap-2 px-4" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="assets/i18n.js"></script>
+  <script src="assets/universities.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/landing.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Build mərhələsinə lazımsız / zərərli fayllar düşməsin
+bin/
+obj/
+ngl.db
+ngl.db-shm
+ngl.db-wal
+Dockerfile
+.dockerignore

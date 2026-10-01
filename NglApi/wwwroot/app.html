@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="az" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#F8FAFC" />
+  <title>Hive — Tələbə Şəbəkəsi</title>
+
+  <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
+  <script src="assets/theme.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+  <link rel="stylesheet" href="assets/styles.css" />
+
+  <style>
+    /* Desktop layout */
+    @media (min-width: 1024px) {
+      .app-layout-wrapper { display: flex; min-height: 100vh; }
+      .app-main-pane { flex: 1; min-width: 0; }
+    }
+  </style>
+</head>
+
+<body class="min-h-dvh bg-[var(--c-bg)] text-[var(--c-text)] pb-20 lg:pb-0">
+
+  <!-- Mobil üçün fon pərdəsi -->
+  <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
+
+  <div class="app-layout-wrapper">
+
+    <!-- ============================ SOL AÇILIB-BAĞLANAN YAN MENYU ============================ -->
+    <aside id="appSidebar" class="app-sidebar fixed inset-y-0 left-0 z-50 flex flex-col border-r border-line bg-[var(--c-surface)] backdrop-blur-xl -translate-x-full transition-transform duration-300 lg:static lg:translate-x-0 lg:z-30">
+      
+      <!-- Yuxarı Loqo və Açılıb-bağlanma düyməsi -->
+      <div class="flex h-16 shrink-0 items-center justify-between border-b border-line px-4">
+        <a href="app.html" class="flex items-center gap-3 overflow-hidden" aria-label="Hive Ana Səhifə">
+          <img src="assets/brand/hive-icon.svg" alt="" class="h-8 w-8 shrink-0 drop-shadow-sm transition-transform duration-200 hover:scale-105" width="32" height="32" />
+          <span class="sidebar-brand-name text-lg font-black tracking-tight text-[var(--c-text)]">Hive</span>
+        </a>
+
+        <!-- Desktop Sidebar Yığma/Genişləndirmə Düyməsi -->
+        <button type="button" id="sidebarCollapseBtn" class="hidden lg:grid h-8 w-8 place-items-center rounded-lg border border-line text-[var(--c-muted)] hover:bg-[var(--c-surface-2)] transition" title="Menyunu yığ / genişləndir">
+          <svg id="collapseIcon" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+        </button>
+
+        <!-- Mobil Bağlama Düyməsi -->
+        <button type="button" id="sidebarCloseMobile" class="lg:hidden grid h-8 w-8 place-items-center rounded-lg border border-line text-[var(--c-muted)] hover:bg-[var(--c-surface-2)]">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Naviqasiya elementləri -->
+      <nav class="flex-1 space-y-1.5 p-3 overflow-y-auto no-scrollbar" aria-label="Əsas Menyu">
+        
+        <!-- Home (Axın) -->
+        <button type="button" class="sidebar-nav-btn is-active" data-go="home" title="Ana Səhifə">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/>
+          </svg>
+          <span class="sidebar-label">Ana Səhifə</span>
+        </button>
+
+        <!-- Direct (Mesajlar & İpucları) -->
+        <button type="button" class="sidebar-nav-btn" data-go="direct" title="Mesajlar">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/>
+          </svg>
+          <span class="sidebar-label">Mesajlar</span>
+          <span id="sidebarDirectBadge" class="sidebar-extra ml-auto hidden rounded-full bg-[var(--c-accent)] px-2 py-0.5 text-[10px] font-bold text-white">0</span>
+        </button>
+
+        <!-- Search (Tələbə & Abituriyent Axtarışı) -->
+        <button type="button" class="sidebar-nav-btn" data-go="search" title="Axtarış">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+          </svg>
+          <span class="sidebar-label">Axtarış</span>
+        </button>
+
+        <!-- Store & Balans -->
+        <button type="button" class="sidebar-nav-btn" data-go="store" title="Mağaza və Balans">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+          </svg>
+          <span class="sidebar-label">Balans & Mağaza</span>
+          <span class="sidebar-extra ml-auto text-[11px] font-extrabold text-amber-500 flex items-center gap-1">
+            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            <span id="sidebarCoinCount">50</span>
+          </span>
+        </button>
+
+        <!-- Profile -->
+        <button type="button" class="sidebar-nav-btn" data-go="profile" title="Profilim">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
+          </svg>
+          <span class="sidebar-label">Profilim</span>
+        </button>
+      </nav>
+
+      <!-- Alt Hissə: İstifadəçi qısa kartı, Dil, Tema və Çıxış -->
+      <div class="border-t border-line p-3 shrink-0 space-y-2">
+        
+        <!-- Balans qutusu (yığcam modda gizlənir) -->
+        <div class="sidebar-extra rounded-xl border border-line bg-[var(--c-surface-2)] p-2.5 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="grid h-7 w-7 place-items-center rounded-lg bg-amber-500/10 text-amber-500">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-muted">Sikkə Balansı</p>
+              <p class="text-xs font-black text-amber-500 tabular-nums"><span id="sidebarBottomCoins">50</span> Sikkə</p>
+            </div>
+          </div>
+          <button type="button" data-open-checkout="starter" class="btn btn-gold text-[10px] !py-1 !px-2 font-bold shrink-0">Artır</button>
+        </div>
+
+        <!-- İstifadəçi qısa profili -->
+        <div class="flex items-center gap-2.5 rounded-xl p-1.5 hover:bg-[var(--c-surface-2)] transition">
+          <span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-[var(--c-accent-soft)] text-sm font-bold text-[var(--c-accent)]">
+            <span id="sidebarAvatar">?</span>
+            <img id="sidebarAvatarImg" alt="" class="absolute inset-0 hidden h-full w-full object-cover" />
+          </span>
+          <div class="sidebar-user-info min-w-0 flex-1">
+            <p id="sidebarFullName" class="truncate text-xs font-bold leading-tight">—</p>
+            <p id="sidebarUsername" class="truncate text-[11px] text-muted">@—</p>
+          </div>
+          <button type="button" id="sidebarLogoutTrigger" class="sidebar-extra grid h-8 w-8 shrink-0 place-items-center rounded-lg text-rose-500 hover:bg-rose-500/10 transition" title="Hesabdan çıxış">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Dil və Tema düymələri -->
+        <div class="sidebar-extra flex items-center justify-between pt-1 border-t border-line/60">
+          <select data-lang-select aria-label="Language" class="rounded-lg border border-line bg-[var(--c-surface)] px-2 py-1 text-[11px] font-semibold">
+            <option value="az">AZ</option>
+            <option value="ru">RU</option>
+            <option value="tr">TR</option>
+            <option value="en">EN</option>
+          </select>
+
+          <button type="button" data-theme-toggle class="grid h-7 w-7 place-items-center rounded-lg border border-line text-[var(--c-muted)] hover:bg-[var(--c-surface-2)] transition">
+            <svg data-icon-sun class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+            <svg data-icon-moon class="hidden h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.6 6.6 0 0 0 9.8 9.8Z"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ============================ ƏSAS MƏZMUN BÖLMƏSİ ============================ -->
+    <div class="app-main-pane flex flex-col min-w-0">
+
+      <!-- Üst başlıq zolağı (Mobil menyu düyməsi + Sürətli Balans düyməsi) -->
+      <header class="glass sticky top-0 z-20 flex h-16 items-center justify-between border-b border-line px-4 sm:px-6">
+        <div class="flex items-center gap-3">
+          <!-- Mobil Menyunu Açma Düyməsi -->
+          <button type="button" id="sidebarOpenMobile" class="lg:hidden grid h-9 w-9 place-items-center rounded-xl border border-line text-[var(--c-text)] hover:bg-[var(--c-surface-2)]">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+
+          <div>
+            <h1 id="pageHeading" class="text-base sm:text-lg font-extrabold tracking-tight">Ana Səhifə</h1>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Qızıl & PRO Mağaza düyməsi -->
+          <button type="button" id="coinStoreBtn" class="coin-pill hover:scale-105 transition shadow-sm" title="Hive Mağaza — Qızıl və PRO">
+            <svg class="h-4 w-4 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+            <span id="topCoinsCount" class="font-black tabular-nums">50</span>
+            <span id="topProBadge" class="badge badge-pro hidden">VIP PRO</span>
+          </button>
+
+          <!-- Profil düyməsi -->
+          <button type="button" data-go="profile" class="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-[var(--c-accent-soft)] text-xs font-bold text-[var(--c-accent)] border border-line">
+            <span id="topAvatar">?</span>
+            <img id="topAvatarImg" alt="" class="absolute inset-0 hidden h-full w-full object-cover" />
+          </button>
+        </div>
+      </header>
+
+      <!-- Görünüşlər -->
+      <main class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8 flex-1">
+
+        <!-- ============================ HOME (AXIN & POSTLAR) ============================ -->
+        <section id="view-home" class="hidden">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl font-extrabold tracking-tight">
+                <span data-i18n="app.welcome">Xoş gəldin</span>, <span id="homeUsername" class="text-accent">—</span>
+              </h2>
+              <p class="mt-1 text-xs text-muted" id="homeSubtitle"></p>
+            </div>
+            <span id="homeRoleBadge" class="badge badge-accent hidden">Abituriyent</span>
+          </div>
+
+          <div class="mt-6 grid gap-6 lg:grid-cols-3">
+            <div class="lg:col-span-2">
+              <!-- Paylaşım yazma -->
+              <form id="postComposer" class="surface border border-line p-5 shadow-sm rounded-2xl">
+                <label for="postInput" class="sr-only">Fikrini tələbələrlə bölüş</label>
+                <textarea id="postInput" rows="2" maxlength="1000" class="textarea"
+                  placeholder="İmtahanlar, fənlər və ya tələbə həyatı haqqında fikrini bölüş..." aria-describedby="postError postCount"></textarea>
+                <div class="mt-2.5 flex items-center justify-between gap-3">
+                  <p id="postError" class="field-error hidden" role="alert"></p>
+                  <p id="postCount" class="ml-auto text-xs tabular-nums text-muted">0/1000</p>
+                  <button id="postSubmit" type="submit" class="btn btn-accent shrink-0 text-xs font-bold">
+                    <svg data-spinner class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25" />
+                      <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                    </svg>
+                    <span data-label>Paylaş</span>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Axın Başlığı -->
+              <div class="mt-6 flex items-center justify-between">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-muted">Kampus Axını</h3>
+                <button id="feedRefresh" type="button" class="btn btn-outline !px-3 !py-1.5 text-xs font-semibold" aria-label="Refresh">
+                  <svg data-spinner class="hidden h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                  <span data-label class="flex items-center gap-1">
+                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    Yenilə
+                  </span>
+                </button>
+              </div>
+
+              <div id="feedLoading" class="mt-4 space-y-3" aria-busy="true">
+                <div class="skeleton h-24 w-full rounded-2xl"></div>
+                <div class="skeleton h-24 w-full rounded-2xl"></div>
+              </div>
+
+              <div id="feedError" class="alert alert-error mt-4 hidden" role="alert"></div>
+
+              <p id="feedEmpty" class="surface border border-line mt-4 hidden p-6 text-center text-sm text-muted rounded-2xl">Hələ heç bir paylaşım yoxdur. İlk fikri sən yaz!</p>
+              <ul id="feedList" class="mt-4 hidden space-y-3"></ul>
+            </div>
+
+            <!-- Sağ panel -->
+            <aside class="space-y-5">
+              <!-- AI köməkçilər -->
+              <div class="surface border border-line p-5 shadow-sm rounded-2xl">
+                <div class="flex items-center gap-2">
+                  <svg class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  <h3 class="text-sm font-bold">AI Tələbə Köməkçiləri</h3>
+                </div>
+                <p class="mt-1 text-xs text-muted">Universitet imtahanları və fənlər üzrə AI botlar</p>
+                <ul id="aiList" class="mt-4 space-y-2"></ul>
+                <p id="aiEmpty" class="mt-3 hidden text-xs text-muted">—</p>
+              </div>
+
+              <!-- Bildirişlər (anonim mesajlar) -->
+              <div class="surface border border-line p-5 shadow-sm rounded-2xl">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <svg class="h-4 w-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <h3 class="text-sm font-bold">Gələn Anonim Suallar</h3>
+                  </div>
+                  <span id="notifCount" class="badge badge-accent">0</span>
+                </div>
+                <ul id="notifList" class="mt-4 space-y-3"></ul>
+                <p id="notifEmpty" class="mt-4 text-xs text-muted">Hələlik yeni anonim sual yoxdur. Profil linkini dostlarınla bölüş!</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============================ DIRECT (DANIŞIQLAR & İPUCLARI) ============================ -->
+        <section id="view-direct" class="hidden">
+          <div class="grid gap-5 lg:grid-cols-3">
+            <div id="conversationPane" class="lg:col-span-1">
+              <h2 class="text-lg font-bold tracking-tight">Söhbətlər</h2>
+
+              <div id="convLoading" class="mt-4 space-y-3" aria-busy="true">
+                <div class="skeleton h-16 w-full rounded-2xl"></div>
+                <div class="skeleton h-16 w-full rounded-2xl"></div>
+              </div>
+
+              <p id="convEmpty" class="mt-4 hidden text-xs text-muted">Hələ heç bir birbaşa mesajınız yoxdur.</p>
+              <ul id="convList" class="mt-4 hidden space-y-2"></ul>
+            </div>
+
+            <div id="threadPane" class="hidden flex-col lg:col-span-2 lg:flex">
+              <div class="surface border border-line rounded-2xl flex h-[70vh] flex-col overflow-hidden shadow-sm">
+                <div class="flex items-center gap-3 border-b border-line px-4 py-3 bg-[var(--c-surface-2)]">
+                  <button type="button" id="threadBack" class="rounded-lg p-1.5 text-[var(--c-muted)] hover:bg-[var(--c-surface)] lg:hidden" aria-label="Geri">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg>
+                  </button>
+                  <span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-[var(--c-accent-soft)] text-sm font-bold text-[var(--c-accent)]">
+                    <span id="threadAvatar">?</span>
+                    <img id="threadAvatarImg" alt="" class="absolute inset-0 hidden h-full w-full object-cover" />
+                  </span>
+                  <div class="min-w-0">
+                    <p class="flex items-center gap-2 truncate text-sm font-bold">
+                      <span id="threadName">—</span>
+                      <span id="threadAiBadge" class="badge badge-ai hidden">AI Bot</span>
+                    </p>
+                    <p id="threadUsername" class="truncate text-xs text-muted">—</p>
+                  </div>
+                </div>
+
+                <div id="threadMessages" class="flex-1 space-y-3 overflow-y-auto px-4 py-4"></div>
+
+                <form id="threadForm" class="flex items-end gap-2 border-t border-line p-3 bg-[var(--c-surface)]">
+                  <textarea id="threadInput" rows="1" maxlength="1000" class="textarea flex-1 text-sm" placeholder="Mesajınızı yazın..."></textarea>
+                  <button id="threadSubmit" type="submit" class="btn btn-accent shrink-0 text-xs font-bold !py-2.5">
+                    <svg data-spinner class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                    <span data-label class="flex items-center gap-1">
+                      <span>Göndər</span>
+                      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </span>
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div id="threadPlaceholder" class="surface border border-line rounded-2xl hidden items-center justify-center p-10 text-center lg:col-span-2 lg:flex">
+              <div class="max-w-xs space-y-2">
+                <svg class="mx-auto h-10 w-10 text-muted opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+                <p class="text-sm font-semibold">Söhbət seçilməyib</p>
+                <p class="text-xs text-muted">Sol siyahıdan hər hansı tələbə və ya anonim sual seçərək yazışmaya başla.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ SEARCH (AXTARIŞ) ============================ -->
+        <section id="view-search" class="hidden">
+          <div class="max-w-xl">
+            <h2 class="text-xl font-extrabold tracking-tight">Tələbə & Abituriyent Axtarışı</h2>
+            <p class="mt-1 text-xs text-muted">Universitet tələbələri, abituriyentlər və AI köməkçiləri tap</p>
+
+            <div class="relative mt-4">
+              <input id="searchInput" type="search" class="input pl-10" placeholder="İstifadəçi adı və ya ad daxil edin..." aria-describedby="searchHint" autocomplete="off" />
+              <span class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--c-muted)]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              </span>
+            </div>
+            <p id="searchHint" class="field-hint text-xs text-muted mt-1.5">Ən azı 2 simvol yazın.</p>
+
+            <div id="searchLoading" class="mt-5 hidden space-y-3" aria-busy="true">
+              <div class="skeleton h-16 w-full rounded-2xl"></div>
+              <div class="skeleton h-16 w-full rounded-2xl"></div>
+            </div>
+
+            <p id="searchEmpty" class="mt-5 hidden text-sm text-muted">Axtarışa uyğun istifadəçi tapılmadı.</p>
+            <ul id="searchResults" class="mt-5 hidden space-y-2"></ul>
+          </div>
+        </section>
+
+        <!-- ============================ STORE & BALANS BÖLMƏSİ ============================ -->
+        <section id="view-store" class="hidden">
+          <div class="flex items-center justify-between border-b border-line pb-4">
+            <div>
+              <h2 class="text-2xl font-black tracking-tight">Hive Mağaza & Balans</h2>
+              <p class="mt-1 text-xs text-muted">Anonim mesajların kimdən gəldiyini öyrənmək üçün sikkələr və VIP PRO abunəlik</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="rounded-2xl border border-line bg-[var(--c-surface)] px-4 py-2 shadow-sm flex items-center gap-2">
+                <svg class="h-5 w-5 text-amber-500" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                <div>
+                  <p class="text-[10px] uppercase font-bold text-muted leading-tight">Mövcud Balans</p>
+                  <p class="text-sm font-black text-amber-500 leading-tight"><span id="storeSectionCoins">50</span> Sikkə</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paketlər Grid-i -->
+          <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <!-- Paket 1 -->
+            <div class="surface border border-line rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:border-accent transition">
+              <div>
+                <span class="badge badge-muted">Başlanğıc</span>
+                <h3 class="mt-2 text-2xl font-black text-amber-500 flex items-center gap-1.5">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                  100 Sikkə
+                </h3>
+                <p class="mt-2 text-xs text-muted leading-relaxed">Anonim mesajların cihaz və əməliyyat sistemi ipuclarını dərhal açmaq üçün.</p>
+              </div>
+              <div class="mt-5 border-t border-line pt-4">
+                <p class="text-lg font-black text-[var(--c-text)]">1.99 ₼</p>
+                <button type="button" data-open-checkout="starter" class="btn btn-outline mt-3 w-full text-xs font-bold">Kartla Al</button>
+              </div>
+            </div>
+
+            <!-- Paket 2 -->
+            <div class="surface border-2 border-indigo-500 rounded-2xl p-5 shadow-md flex flex-col justify-between relative bg-indigo-500/5">
+              <span class="absolute -top-3 right-4 badge badge-accent shadow-sm">Ən Populyar</span>
+              <div>
+                <span class="badge badge-accent">Standart Paket</span>
+                <h3 class="mt-2 text-2xl font-black text-amber-500 flex items-center gap-1.5">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                  300 Sikkə
+                </h3>
+                <p class="mt-2 text-xs text-muted leading-relaxed">Məkan, şəhər və universitet ipuclarını rahatlıqla açmaq üçün ən optimal seçim.</p>
+              </div>
+              <div class="mt-5 border-t border-line pt-4">
+                <p class="text-lg font-black text-[var(--c-text)]">4.99 ₼</p>
+                <button type="button" data-open-checkout="popular" class="btn btn-accent mt-3 w-full text-xs font-bold">Kartla Al</button>
+              </div>
+            </div>
+
+            <!-- Paket 3 -->
+            <div class="surface border border-purple-500/40 rounded-2xl p-5 shadow-md flex flex-col justify-between bg-purple-500/5">
+              <div>
+                <span class="badge badge-pro">VIP PRO Abunəlik</span>
+                <h3 class="mt-2 text-2xl font-black text-purple-600 dark:text-purple-400">Limitsiz İpucları</h3>
+                <p class="mt-2 text-xs text-muted leading-relaxed">+500 Bonus Sikkə, Profil VIP nişanı və bütün ipuclarını limitsiz pulsuz açmaq imkanı.</p>
+              </div>
+              <div class="mt-5 border-t border-line pt-4">
+                <p class="text-lg font-black text-[var(--c-text)]">9.99 ₼ <span class="text-xs font-normal text-muted">/ ay</span></p>
+                <button type="button" data-open-checkout="pro" class="btn btn-gradient mt-3 w-full text-xs font-bold">VIP Abunə Ol</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Təhlükəsizlik və Bank Qeydi -->
+          <div class="mt-6 rounded-2xl border border-line bg-[var(--c-surface-2)] p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted">
+            <div class="flex items-center gap-2">
+              <svg class="h-5 w-5 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>AzeriCard / Millikart 256-bit SSL Təhlükəsiz Ödəniş Sistemi ilə qorunur.</span>
+            </div>
+            <span class="font-semibold text-accent">Real-Vaxt Sikkə Yükləməsi</span>
+          </div>
+
+          <!-- Əməliyyat Tarixçəsi (Son Fakturalar) -->
+          <div class="mt-8">
+            <h3 class="text-base font-bold tracking-tight">Son Faktura və Ödəniş Tarixçəsi</h3>
+            <div class="mt-3 overflow-x-auto rounded-2xl border border-line bg-[var(--c-surface)]">
+              <table class="w-full text-left text-xs">
+                <thead class="border-b border-line bg-[var(--c-surface-2)] text-muted uppercase text-[10px] font-bold">
+                  <tr>
+                    <th class="px-4 py-3">Faktura No</th>
+                    <th class="px-4 py-3">Paket</th>
+                    <th class="px-4 py-3">Məbləğ</th>
+                    <th class="px-4 py-3">Kart</th>
+                    <th class="px-4 py-3">Tarix</th>
+                    <th class="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionTableBody" class="divide-y divide-[var(--c-border)]">
+                  <tr>
+                    <td colspan="6" class="px-4 py-6 text-center text-muted">Yüklənir...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================ PROFILE (PROFİL) ============================ -->
+        <section id="view-profile" class="hidden">
+          <h2 class="text-xl font-extrabold tracking-tight">Şəxsi Profil</h2>
+
+          <div class="mt-5 grid gap-5 lg:grid-cols-5">
+            <div class="space-y-5 lg:col-span-3">
+              <!-- Profil kartı -->
+              <div class="surface border border-line rounded-2xl overflow-hidden shadow-sm">
+                <div class="flex items-center gap-4 border-b border-line bg-[var(--c-surface-2)] px-5 py-5">
+                  <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[var(--c-accent)] text-xl font-bold text-white shadow-sm">
+                    <span id="profileAvatar">?</span>
+                    <img id="profileAvatarImg" alt="" class="absolute inset-0 hidden h-full w-full object-cover" />
+                  </span>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <p id="profileFullName" class="truncate text-lg font-bold">—</p>
+                      <span id="profileRoleBadge" class="badge badge-accent hidden">Abituriyent</span>
+                    </div>
+                    <p id="profileUsername" class="truncate text-xs font-semibold text-accent">@—</p>
+                  </div>
+                </div>
+
+                <dl class="divide-y divide-[var(--c-border)] text-xs">
+                  <div class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt class="text-muted">E-poçt</dt>
+                    <dd id="profileEmail" class="truncate font-semibold text-right">—</dd>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt id="profileUniLabel" class="text-muted">Universitet</dt>
+                    <dd id="profileUniversity" class="text-right font-semibold">—</dd>
+                  </div>
+                  <div id="rowProfileFaculty" class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt class="text-muted">Fakültə</dt>
+                    <dd id="profileFaculty" class="text-right font-semibold">—</dd>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt id="profileSpecLabel" class="text-muted">İxtisas</dt>
+                    <dd id="profileSpecialty" class="text-right font-semibold">—</dd>
+                  </div>
+                  <div id="rowProfileCourse" class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt class="text-muted">Kurs</dt>
+                    <dd id="profileCourse" class="font-semibold">—</dd>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt id="profileGroupLabel" class="text-muted">Qrup</dt>
+                    <dd id="profileGroup" class="font-semibold">—</dd>
+                  </div>
+                  <div class="flex items-center justify-between gap-4 px-5 py-3.5">
+                    <dt class="text-muted">Yaş</dt>
+                    <dd id="profileAge" class="font-semibold">—</dd>
+                  </div>
+                </dl>
+              </div>
+
+              <!-- Profil şəkli yükləmə -->
+              <div class="surface border border-line rounded-2xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold">Profil Şəkli</h3>
+                <div class="mt-4 flex flex-wrap items-center gap-5">
+                  <span class="relative grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[var(--c-accent-soft)] text-xl font-bold text-[var(--c-accent)] border border-line">
+                    <span id="avatarLetter">?</span>
+                    <img id="avatarPreview" alt="" class="absolute inset-0 hidden h-full w-full object-cover" />
+                  </span>
+                  <div class="min-w-[12rem] flex-1">
+                    <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" />
+                    <div class="flex flex-wrap gap-2">
+                      <button id="avatarPick" type="button" class="btn btn-outline text-xs">Şəkil Seç</button>
+                      <button id="avatarUpload" type="button" class="btn btn-accent hidden text-xs">
+                        <svg data-spinner class="hidden h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                        <span data-label>Yüklə</span>
+                      </button>
+                      <button id="avatarRemove" type="button" class="btn btn-ghost hidden text-xs text-rose-500">Sil</button>
+                    </div>
+                    <p class="field-hint text-[11px] text-muted mt-1.5">JPEG, PNG və ya WEBP · maksimum 2 MB</p>
+                    <p id="avatarError" class="field-error hidden mt-1" role="alert"></p>
+                    <p id="avatarSuccess" class="field-hint hidden text-accent mt-1" role="status"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Profil redaktəsi -->
+              <form id="profileForm" class="surface border border-line rounded-2xl p-5 shadow-sm" novalidate>
+                <h3 class="text-sm font-bold">Ad və İstifadəçi Adını Yenilə</h3>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label for="editFirstName" class="mb-1 block text-xs font-semibold">Ad</label>
+                    <input id="editFirstName" type="text" maxlength="50" class="input" />
+                    <p id="editFirstNameError" class="field-error hidden" role="alert"></p>
+                  </div>
+                  <div>
+                    <label for="editLastName" class="mb-1 block text-xs font-semibold">Soyad</label>
+                    <input id="editLastName" type="text" maxlength="50" class="input" />
+                    <p id="editLastNameError" class="field-error hidden" role="alert"></p>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <label for="editUsername" class="mb-1 block text-xs font-semibold">İstifadəçi adı</label>
+                  <input id="editUsername" type="text" maxlength="30" class="input" />
+                  <p id="editUsernameError" class="field-error hidden" role="alert"></p>
+                  <p id="usernameNotice" class="field-hint text-[11px] text-muted mt-1">İstifadəçi adını yalnız 14 gündə bir dəfə dəyişmək mümkündür.</p>
+                </div>
+
+                <div id="profileMessage" class="alert mt-4 hidden" role="status"></div>
+
+                <button id="profileSubmit" type="submit" class="btn btn-accent mt-4 text-xs font-bold w-full sm:w-auto">
+                  <svg data-spinner class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                  <span data-label>Dəyişiklikləri Saxla</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Sağ: Paylaşım linki & Çıxış -->
+            <div class="lg:col-span-2 space-y-5">
+              <div class="surface border border-line rounded-2xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold">Anonim Linkini Paylaş</h3>
+                <p class="mt-1 text-xs text-muted">Bu linki Instagram Bio, Telegram və ya WhatsApp statusuna qoyaraq anonim suallar qəbul et:</p>
+
+                <div class="mt-3 flex items-center gap-2 rounded-xl border border-line bg-[var(--c-bg)] p-2 pl-3">
+                  <input id="shareLink" type="text" readonly class="min-w-0 flex-1 bg-transparent text-xs text-muted focus:outline-none" aria-label="Share link" />
+                </div>
+
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                  <button type="button" class="btn btn-accent text-xs font-bold" id="copyShare">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                    <span>Linki Kopyala</span>
+                  </button>
+                  <a id="viewPublicLink" href="profile.html" target="_blank" rel="noopener" class="btn btn-outline text-xs font-bold text-center">Baxış</a>
+                </div>
+
+                <div class="mt-2 grid grid-cols-3 gap-2">
+                  <button type="button" data-share="linkedin" class="btn btn-outline !px-2 text-xs">LinkedIn</button>
+                  <button type="button" data-share="instagram" class="btn btn-outline !px-2 text-xs">Instagram</button>
+                  <button type="button" data-share="tiktok" class="btn btn-outline !px-2 text-xs">TikTok</button>
+                </div>
+              </div>
+
+              <div class="surface border border-line rounded-2xl p-5 shadow-sm">
+                <h3 class="text-sm font-bold">Təhlükəsizlik & Çıxış</h3>
+                <p class="mt-1 text-xs text-muted">Hesabdan çıxış etdikdə bu cihazdakı aktiv sessiya dərhal ləğv edilir.</p>
+                <button type="button" id="logoutBtn" class="btn btn-outline text-rose-500 hover:bg-rose-500/10 mt-4 w-full text-xs font-bold">Hesabdan Çıxış Et</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================ MOBİL ALT NAVİQASİYA ============================ -->
+  <nav id="bottomNav" class="glass fixed inset-x-0 bottom-0 z-30 border-t border-line px-3 pb-[env(safe-area-inset-bottom)] pt-1.5 lg:hidden" aria-label="Mobil bölmələr">
+    <div class="mx-auto flex max-w-md items-center justify-between gap-1">
+      <button type="button" class="tab flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold text-muted transition" data-go="home">
+        <svg class="tab-icon h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg>
+        <span>Axın</span>
+      </button>
+
+      <button type="button" class="tab flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold text-muted transition" data-go="direct">
+        <span class="relative">
+          <svg class="tab-icon h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+          <span id="directBadge" class="absolute -right-1.5 -top-1.5 hidden min-w-[14px] rounded-full bg-[var(--c-accent)] px-1 text-center text-[9px] font-bold leading-3 text-white">0</span>
+        </span>
+        <span>Mesajlar</span>
+      </button>
+
+      <button type="button" class="tab flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold text-muted transition" data-go="search">
+        <svg class="tab-icon h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>Axtar</span>
+      </button>
+
+      <button type="button" class="tab flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold text-muted transition" data-go="store">
+        <svg class="tab-icon h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <span>Mağaza</span>
+      </button>
+
+      <button type="button" class="tab flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[10px] font-bold text-muted transition" data-go="profile">
+        <svg class="tab-icon h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span>Profil</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ============================ İPUCU AÇILIŞ MODALI ============================ -->
+  <div id="clueModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="clueModalTitle">
+    <div class="modal-panel max-w-lg">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <div class="flex items-center gap-2">
+          <svg class="h-5 w-5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 0 0-3 9h6a5 5 0 0 0-3-9z"/></svg>
+          <h2 id="clueModalTitle" class="text-base font-bold">Kim yazıb? (İpucu Mərkəzi)</h2>
+        </div>
+        <button type="button" id="clueModalClose" class="rounded-lg p-1.5 text-muted hover:bg-[var(--c-surface-2)]">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="mt-4 rounded-xl border border-line bg-[var(--c-surface-2)] p-3">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-muted">Gələn Anonim Mesaj:</p>
+        <p id="clueMessagePreview" class="mt-1 text-xs font-semibold italic text-[var(--c-text)]">«...»</p>
+      </div>
+
+      <div class="mt-4 space-y-2.5">
+        <!-- Səviyyə 1: Cihaz -->
+        <div class="rounded-xl border border-line p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="grid h-8 w-8 place-items-center rounded-lg bg-indigo-500/10 text-indigo-500 shrink-0">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-bold uppercase text-accent">1. CİHAZ VƏ SİSTEM</p>
+                <p id="clueDeviceText" class="mt-0.5 text-xs font-semibold text-muted">Kilidlidir</p>
+              </div>
+            </div>
+            <button type="button" id="btnUnlockLevel1" class="btn btn-accent shrink-0 text-xs !py-1.5 !px-3 font-bold">Aç (10 Sikkə)</button>
+          </div>
+        </div>
+
+        <!-- Səviyyə 2: Məkan -->
+        <div class="rounded-xl border border-line p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="grid h-8 w-8 place-items-center rounded-lg bg-rose-500/10 text-rose-500 shrink-0">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-bold uppercase text-accent">2. TƏXMİNİ MƏKAN</p>
+                <p id="clueLocationText" class="mt-0.5 text-xs font-semibold text-muted">Kilidlidir</p>
+              </div>
+            </div>
+            <button type="button" id="btnUnlockLevel2" class="btn btn-accent shrink-0 text-xs !py-1.5 !px-3 font-bold">Aç (20 Sikkə)</button>
+          </div>
+        </div>
+
+        <!-- Səviyyə 3: Universitet və Baş Hərf -->
+        <div class="rounded-xl border border-line p-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <div class="grid h-8 w-8 place-items-center rounded-lg bg-emerald-500/10 text-emerald-500 shrink-0">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+              </div>
+              <div>
+                <p class="text-[11px] font-bold uppercase text-accent">3. UNİVERSİTET & BAŞ HƏRF</p>
+                <p id="clueSenderText" class="mt-0.5 text-xs font-semibold text-muted">Kilidlidir</p>
+              </div>
+            </div>
+            <button type="button" id="btnUnlockLevel3" class="btn btn-accent shrink-0 text-xs !py-1.5 !px-3 font-bold">Aç (30 Sikkə)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 flex items-center justify-between border-t border-line pt-3">
+        <div class="text-xs font-semibold text-muted flex items-center gap-1.5">
+          <span>Balansınız:</span>
+          <span id="clueModalCoins" class="font-extrabold text-amber-500">50 Sikkə</span>
+        </div>
+        <button type="button" id="clueToStoreBtn" class="btn btn-gold text-xs !py-1.5 !px-3 font-bold">Sikkə Al</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ REALİST BANK KARTI İLƏ ÖDƏNİŞ MODALI ============================ -->
+  <div id="checkoutModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="checkoutModalTitle">
+    <div class="modal-panel max-w-lg">
+      <div class="flex items-center justify-between border-b border-line pb-3">
+        <div class="flex items-center gap-2">
+          <svg class="h-5 w-5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <h2 id="checkoutModalTitle" class="text-base font-bold">Təhlükəsiz Bank Kartı ilə Ödəniş</h2>
+        </div>
+        <button type="button" id="checkoutModalClose" class="rounded-lg p-1.5 text-muted hover:bg-[var(--c-surface-2)]">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- 3D Bank Kartı Ön Baxışı -->
+      <div class="mt-4 flex justify-center">
+        <div class="credit-card-preview">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black tracking-widest uppercase opacity-80">Hive Pay</span>
+            <span class="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded bg-white/20">AzeriCard / Millikart</span>
+          </div>
+
+          <div class="flex items-center justify-between my-2">
+            <div class="credit-card-chip"></div>
+            <svg class="h-6 w-6 opacity-75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+          </div>
+
+          <div>
+            <p id="cardPreviewNumber" class="font-mono text-base tracking-widest font-bold">•••• •••• •••• ••••</p>
+            <div class="mt-2 flex items-center justify-between text-[11px] opacity-90 uppercase">
+              <span id="cardPreviewHolder" class="truncate font-semibold max-w-[10rem]">Ad Soyad</span>
+              <span id="cardPreviewExpiry" class="font-mono font-bold">MM/YY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paket Məlumatı -->
+      <div class="mt-4 rounded-xl border border-line bg-[var(--c-surface-2)] p-3 flex items-center justify-between">
+        <div>
+          <p id="checkoutPackageTitle" class="text-xs font-bold text-accent">100 Sikkə Paketi</p>
+          <p id="checkoutPackageBenefit" class="text-[11px] text-muted">+100 Sikkə Balansınıza əlavə olunacaq</p>
+        </div>
+        <p id="checkoutPackageAmount" class="text-base font-black text-[var(--c-text)]">1.99 ₼</p>
+      </div>
+
+      <!-- Kart Formu -->
+      <form id="checkoutForm" class="mt-4 space-y-3" novalidate>
+        <input type="hidden" id="checkoutPackageId" value="starter" />
+
+        <div>
+          <label for="cardInputNumber" class="block text-xs font-semibold text-muted mb-1">Kartın Nömrəsi (16 rəqəm)</label>
+          <div class="relative">
+            <input id="cardInputNumber" type="text" maxlength="19" placeholder="4169 7512 3456 7890" class="input font-mono text-xs pl-9" required />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="cardInputExpiry" class="block text-xs font-semibold text-muted mb-1">Bitmə Tarixi</label>
+            <input id="cardInputExpiry" type="text" maxlength="5" placeholder="12/28" class="input font-mono text-xs text-center" required />
+          </div>
+          <div>
+            <label for="cardInputCvv" class="block text-xs font-semibold text-muted mb-1">CVV / CVC</label>
+            <input id="cardInputCvv" type="password" maxlength="3" placeholder="•••" class="input font-mono text-xs text-center" required />
+          </div>
+        </div>
+
+        <div>
+          <label for="cardInputHolder" class="block text-xs font-semibold text-muted mb-1">Kart Sahibinin Adı və Soyadı</label>
+          <input id="cardInputHolder" type="text" maxlength="50" placeholder="MURAD ALIYEV" class="input uppercase text-xs" required />
+        </div>
+
+        <div class="pt-2">
+          <button id="checkoutSubmitBtn" type="submit" class="btn btn-accent w-full text-xs font-bold !py-2.5">
+            <svg data-spinner class="hidden h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+            <span data-label id="checkoutSubmitLabel">1.99 ₼ Ödənişi Tamamla</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-muted">
+        <svg class="h-3.5 w-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>256-bit SSL şifrələmə ilə təhlükəsiz simulyasiya şlüzü.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ ÖDƏNİŞ QƏBZİ MODALI ============================ -->
+  <div id="receiptModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="receiptModalTitle">
+    <div class="modal-panel max-w-sm text-center">
+      <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+
+      <h3 id="receiptModalTitle" class="mt-3 text-lg font-black tracking-tight">Ödəniş Uğurla Tamamlandı!</h3>
+      <p id="receiptMessage" class="mt-1 text-xs text-muted">Paket balansınıza əlavə edildi.</p>
+
+      <div class="mt-4 rounded-xl border border-line bg-[var(--c-surface-2)] p-3.5 text-left text-xs space-y-2">
+        <div class="flex justify-between">
+          <span class="text-muted">Faktura Kodu:</span>
+          <span id="receiptOrderId" class="font-mono font-bold">—</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-muted">Ödənilən Məbləğ:</span>
+          <span id="receiptAmount" class="font-bold text-[var(--c-text)]">— ₼</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-muted">Bank Kartı:</span>
+          <span id="receiptCard" class="font-mono font-semibold">•••• •••• •••• 7890</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-muted">Cari Sikkə Balansı:</span>
+          <span id="receiptNewCoins" class="font-black text-amber-500">150 Sikkə</span>
+        </div>
+      </div>
+
+      <button type="button" id="receiptCloseBtn" class="btn btn-accent mt-5 w-full text-xs font-bold">Davam Et</button>
+    </div>
+  </div>
+
+  <!-- ============================ ÇIXIŞ TƏSDİQ MODALI ============================ -->
+  <div id="logoutConfirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="logoutConfirmTitle">
+    <div class="modal-panel max-w-xs text-center">
+      <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-rose-500/10 text-rose-500">
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+
+      <h3 id="logoutConfirmTitle" class="mt-3 text-base font-bold">Hesabdan çıxmaq istəyirsiniz?</h3>
+      <p class="mt-1 text-xs text-muted">Sessiya təhlükəsiz şəkildə sonlandırılacaq.</p>
+
+      <div class="mt-5 grid grid-cols-2 gap-2">
+        <button type="button" id="logoutCancelBtn" class="btn btn-outline text-xs font-semibold">Ləğv Et</button>
+        <button type="button" id="logoutConfirmBtn" class="btn btn-accent bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">Çıxış Et</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="pointer-events-none fixed inset-x-0 top-3 z-50 flex flex-col items-center gap-2 px-4" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="assets/i18n.js"></script>
+  <script src="assets/api.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

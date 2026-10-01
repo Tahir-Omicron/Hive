@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <radialGradient id="avBg" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#2D271D"/>
+      <stop offset="100%" stop-color="#14110B"/>
+    </radialGradient>
+    <linearGradient id="avGold" x1="48" y1="36" x2="208" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="35%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <filter id="avGlow" x="16" y="16" width="224" height="224" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#F59E0B" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Arxa plan dairəsi -->
+  <circle cx="128" cy="128" r="128" fill="url(#avBg)"/>
+  <circle cx="128" cy="128" r="127" stroke="#F59E0B" stroke-opacity="0.18" stroke-width="2"/>
+
+  <!-- Mərkəzi Hexagon Mark -->
+  <g filter="url(#avGlow)">
+    <path d="M128 36
+             C134 36 140 39.5 143.5 45.5
+             L215 107
+             C218.5 113 221 119.5 221 126.5
+             L221 161.5
+             C221 168.5 218.5 175 215 181
+             L143.5 242.5
+             C140 248.5 134 252 128 252
+             C122 252 116 248.5 112.5 242.5
+             L41 181
+             C37.5 175 35 168.5 35 161.5
+             L35 126.5
+             C35 119.5 37.5 113 41 107
+             L112.5 45.5
+             C116 39.5 122 36 128 36 Z"
+          fill="url(#avGold)"/>
+
+    <!-- Daxili H hərfi -->
+    <rect x="80" y="86" width="22" height="96" rx="11" fill="#14110B"/>
+    <rect x="154" y="86" width="22" height="96" rx="11" fill="#14110B"/>
+    <rect x="90" y="123" width="76" height="22" rx="11" fill="#14110B"/>
+    <circle cx="128" cy="134" r="7" fill="#FDE68A"/>
+  </g>
+</svg>
